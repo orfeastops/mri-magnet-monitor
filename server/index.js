@@ -20,11 +20,17 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(session({
-  secret: process.env.SESSION_SECRET || 'change-this-in-env-file',
+  secret: process.env.SESSION_SECRET || 'mri-session-secret-k9x2',
   resave: false,
   saveUninitialized: false,
   cookie: { maxAge: 7 * 24 * 60 * 60 * 1000 } // 7 days
 }));
+
+// --- PWA assets (public, no auth) ---
+const pwaFiles = ['/manifest.json', '/icon-192.png', '/icon-512.png', '/apple-touch-icon.png', '/favicon.ico'];
+pwaFiles.forEach(f => {
+  app.get(f, (req, res) => res.sendFile(path.join(__dirname, '../webapp', f)));
+});
 
 // --- Login / Logout (no auth required) ---
 app.get('/login', (req, res) => {
