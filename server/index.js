@@ -61,7 +61,20 @@ app.use(express.static(path.join(__dirname, '../webapp')));
 
 const devices = new Map();
 
+// Ping all clients every 10s — terminate unresponsive ones within ~20s
+const pingInterval = setInterval(() => {
+  wss.clients.forEach(client => {
+    if (client.isAlive === false) { client.terminate(); return; }
+    client.isAlive = false;
+    client.ping();
+  });
+}, 10000);
+wss.on('close', () => clearInterval(pingInterval));
+
 wss.on('connection', (ws) => {
+  ws.isAlive = true;
+  ws.on('pong', () => { ws.isAlive = true; });
+
   let deviceMac = null;
   let isESP = false;
   let isBrowser = false;
