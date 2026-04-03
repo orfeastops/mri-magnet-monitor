@@ -10,8 +10,11 @@ header h1 { font-size: 1.1rem; color: #00ff88; }
 #view-devices { padding: 20px; }
 h2 { font-size: 11px; color: #555; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 14px; }
 #devices { display: flex; flex-direction: column; gap: 10px; }
-.device-card { background: #111; border: 1px solid #222; border-radius: 10px; padding: 16px; cursor: pointer; transition: border-color 0.2s; }
+.device-card { background: #111; border: 1px solid #222; border-radius: 10px; padding: 16px; cursor: pointer; transition: border-color 0.2s; display: flex; align-items: center; gap: 10px; }
 .device-card:hover { border-color: #00ff88; }
+.card-main { flex: 1; min-width: 0; }
+.card-menu-btn { background: none; border: none; color: #444; font-size: 1.3rem; cursor: pointer; padding: 4px 10px; border-radius: 6px; flex-shrink: 0; line-height: 1; }
+.card-menu-btn:hover { background: #1a1a1a; color: #aaa; }
 .dev-name { font-size: 1rem; font-weight: bold; color: #fff; }
 .dev-mac { font-size: 11px; color: #444; margin-top: 3px; }
 .dev-online { color: #00ff88; font-size: 11px; margin-top: 6px; }

@@ -4,8 +4,11 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>MRI Magnet Monitor</title>
+  <link rel="manifest" href="/manifest.json">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  <meta name="theme-color" content="#0a0a0a">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/xterm@5.3.0/css/xterm.css">
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="style.css?v=4">
 </head>
 <body>
   <div id="app">
@@ -25,11 +28,9 @@
         <button id="back-btn">← Πίσω</button>
         <h2 id="magnet-title"></h2>
         <span id="magnet-online" class="badge"></span>
-        <div class="topbar-menu">
-          <button id="menu-btn" class="menu-btn">⋮</button>
-          <div id="menu-dropdown" class="menu-dropdown" style="display:none">
-            <button id="rename-btn">✏️ Μετονομασία</button>
-          </div>
+        <button class="menu-btn" id="menu-btn">⋮</button>
+        <div id="menu-dropdown" class="menu-dropdown" style="display:none">
+          <button id="rename-btn">✏️ Μετονομασία</button>
         </div>
       </div>
       <div class="tabs">
@@ -87,6 +88,6 @@
   </div>
   <script src="https://cdn.jsdelivr.net/npm/xterm@5.3.0/lib/xterm.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/xterm-addon-fit@0.8.0/lib/xterm-addon-fit.js"></script>
-  <script src="app.js"></script>
+  <script src="app.js?v=4"></script>
 </body>
 </html>

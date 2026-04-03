@@ -1,5 +1,6 @@
 const WS_URL = `wss://${location.host}`;
 let ws, currentMac = null;
+let renamingMac = null;
 let pendingNewDevice = null;
 let term = null;
 let fitAddon = null;
@@ -64,11 +65,14 @@ async function loadDevices() {
     ? '<p style="color:#444;font-size:13px">Δεν υπάρχουν μηχανήματα ακόμα.</p>'
     : devs.map(d => `
       <div class="device-card" onclick="openMagnet('${d.mac}','${d.name || d.mac}',${d.online})">
-        <div class="dev-name">${d.name || '<span class="unnamed">Αχαρακτήριστο</span>'}</div>
-        <div class="dev-mac">${d.mac}</div>
-        <div class="${d.online ? 'dev-online' : 'dev-offline'}">
-          ${d.online ? '● Online' : '○ Offline'}
+        <div class="card-main">
+          <div class="dev-name">${d.name || '<span class="unnamed">Αχαρακτήριστο</span>'}</div>
+          <div class="dev-mac">${d.mac}</div>
+          <div class="${d.online ? 'dev-online' : 'dev-offline'}">
+            ${d.online ? '● Online' : '○ Offline'}
+          </div>
         </div>
+        <button class="card-menu-btn" onclick="event.stopPropagation(); openRenameModal('${d.mac}','${(d.name||'').replace(/'/g,"\\'")}')">⋮</button>
       </div>`).join('');
 
   // Prompt naming for any unnamed devices not already in queue
@@ -186,7 +190,7 @@ function switchTab(name, btn) {
   if (name === 'terminal' && fitAddon) setTimeout(() => fitAddon.fit(), 50);
 }
 
-// --- ⋮ Menu & Rename ---
+// --- ⋮ Menu (device detail topbar) ---
 document.getElementById('menu-btn').onclick = (e) => {
   e.stopPropagation();
   const dd = document.getElementById('menu-dropdown');
@@ -195,24 +199,32 @@ document.getElementById('menu-btn').onclick = (e) => {
 document.addEventListener('click', () => {
   document.getElementById('menu-dropdown').style.display = 'none';
 });
-
 document.getElementById('rename-btn').onclick = () => {
   document.getElementById('menu-dropdown').style.display = 'none';
   const current = document.getElementById('magnet-title').textContent;
-  const input = document.getElementById('rename-input');
-  input.value = current !== currentMac ? current : '';
-  document.getElementById('modal-rename').style.display = 'flex';
-  setTimeout(() => input.focus(), 50);
+  openRenameModal(currentMac, current !== currentMac ? current : '');
 };
+
+// --- Rename modal (shared by list ⋮ and detail ⋮) ---
+function openRenameModal(mac, currentName) {
+  renamingMac = mac;
+  const input = document.getElementById('rename-input');
+  input.value = currentName || '';
+  document.getElementById('modal-rename').style.display = 'flex';
+  setTimeout(() => { input.focus(); input.select(); }, 50);
+}
 document.getElementById('rename-cancel').onclick = () => {
   document.getElementById('modal-rename').style.display = 'none';
+  renamingMac = null;
 };
 document.getElementById('rename-save').onclick = () => {
   const name = document.getElementById('rename-input').value.trim();
-  if (!name || !currentMac) return;
-  ws.send(JSON.stringify({ type: 'name_device', mac: currentMac, name }));
-  document.getElementById('magnet-title').textContent = name;
+  if (!name || !renamingMac) return;
+  ws.send(JSON.stringify({ type: 'name_device', mac: renamingMac, name }));
+  if (renamingMac === currentMac) document.getElementById('magnet-title').textContent = name;
   document.getElementById('modal-rename').style.display = 'none';
+  renamingMac = null;
+  loadDevices();
 };
 document.getElementById('rename-input').addEventListener('keydown', e => {
   if (e.key === 'Enter') document.getElementById('rename-save').click();
