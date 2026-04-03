@@ -1,4 +1,5 @@
 node_modules/
 server/database.sqlite
+server/package-lock.json
 *.log
 .DS_Store
