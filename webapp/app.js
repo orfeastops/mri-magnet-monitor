@@ -71,8 +71,8 @@ async function loadDevices() {
         </div>
       </div>`).join('');
 
-  // Prompt naming for any unnamed online devices not already in queue
-  devs.filter(d => !d.name && d.online).forEach(d => enqueueNaming(d.mac));
+  // Prompt naming for any unnamed devices not already in queue
+  devs.filter(d => !d.name).forEach(d => enqueueNaming(d.mac));
 }
 
 // --- Naming queue ---
@@ -185,6 +185,39 @@ function switchTab(name, btn) {
   document.getElementById(`tab-${name}`).style.display = 'flex';
   if (name === 'terminal' && fitAddon) setTimeout(() => fitAddon.fit(), 50);
 }
+
+// --- ⋮ Menu & Rename ---
+document.getElementById('menu-btn').onclick = (e) => {
+  e.stopPropagation();
+  const dd = document.getElementById('menu-dropdown');
+  dd.style.display = dd.style.display === 'none' ? 'block' : 'none';
+};
+document.addEventListener('click', () => {
+  document.getElementById('menu-dropdown').style.display = 'none';
+});
+
+document.getElementById('rename-btn').onclick = () => {
+  document.getElementById('menu-dropdown').style.display = 'none';
+  const current = document.getElementById('magnet-title').textContent;
+  const input = document.getElementById('rename-input');
+  input.value = current !== currentMac ? current : '';
+  document.getElementById('modal-rename').style.display = 'flex';
+  setTimeout(() => input.focus(), 50);
+};
+document.getElementById('rename-cancel').onclick = () => {
+  document.getElementById('modal-rename').style.display = 'none';
+};
+document.getElementById('rename-save').onclick = () => {
+  const name = document.getElementById('rename-input').value.trim();
+  if (!name || !currentMac) return;
+  ws.send(JSON.stringify({ type: 'name_device', mac: currentMac, name }));
+  document.getElementById('magnet-title').textContent = name;
+  document.getElementById('modal-rename').style.display = 'none';
+};
+document.getElementById('rename-input').addEventListener('keydown', e => {
+  if (e.key === 'Enter') document.getElementById('rename-save').click();
+  if (e.key === 'Escape') document.getElementById('rename-cancel').click();
+});
 
 document.getElementById('back-btn').onclick = () => {
   currentMac = null;

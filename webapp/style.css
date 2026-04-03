@@ -16,7 +16,13 @@ h2 { font-size: 11px; color: #555; text-transform: uppercase; letter-spacing: 1p
 .dev-mac { font-size: 11px; color: #444; margin-top: 3px; }
 .dev-online { color: #00ff88; font-size: 11px; margin-top: 6px; }
 .dev-offline { color: #ff4444; font-size: 11px; margin-top: 6px; }
-.topbar { display: flex; align-items: center; gap: 10px; padding: 10px 16px; border-bottom: 1px solid #1a1a1a; }
+.topbar { display: flex; align-items: center; gap: 10px; padding: 10px 16px; border-bottom: 1px solid #1a1a1a; position: relative; }
+.topbar-menu { position: relative; }
+.menu-btn { background: none; border: none; color: #555; font-size: 1.3rem; cursor: pointer; padding: 2px 8px; border-radius: 6px; line-height: 1; }
+.menu-btn:hover { background: #1a1a1a; color: #aaa; }
+.menu-dropdown { position: absolute; right: 0; top: 110%; background: #1a1a1a; border: 1px solid #333; border-radius: 8px; min-width: 160px; z-index: 50; padding: 4px; }
+.menu-dropdown button { display: block; width: 100%; text-align: left; background: none; border: none; color: #ccc; padding: 8px 12px; font-family: monospace; font-size: 13px; cursor: pointer; border-radius: 6px; }
+.menu-dropdown button:hover { background: #2a2a2a; color: #fff; }
 .topbar h2 { margin: 0; flex: 1; color: #fff; font-size: 1rem; text-transform: none; letter-spacing: 0; }
 #back-btn { background: none; border: 1px solid #333; color: #888; padding: 5px 12px; border-radius: 6px; cursor: pointer; font-size: 12px; font-family: monospace; }
 #back-btn:hover { border-color: #00ff88; color: #00ff88; }

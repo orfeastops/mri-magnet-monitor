@@ -25,6 +25,12 @@
         <button id="back-btn">← Πίσω</button>
         <h2 id="magnet-title"></h2>
         <span id="magnet-online" class="badge"></span>
+        <div class="topbar-menu">
+          <button id="menu-btn" class="menu-btn">⋮</button>
+          <div id="menu-dropdown" class="menu-dropdown" style="display:none">
+            <button id="rename-btn">✏️ Μετονομασία</button>
+          </div>
+        </div>
       </div>
       <div class="tabs">
         <button class="tab active" data-tab="terminal">🖥️ Terminal</button>
@@ -50,6 +56,17 @@
         <button class="refresh-btn" onclick="sendCmd('R\r')">↻ Ανανέωση (R)</button>
         <div id="parsed-grid"></div>
         <div id="faults-box"></div>
+      </div>
+    </div>
+
+    <div id="modal-rename" style="display:none">
+      <div class="modal-box">
+        <h3>✏️ Μετονομασία</h3>
+        <input id="rename-input" type="text" placeholder="Νέο όνομα..." maxlength="40">
+        <div class="modal-btns">
+          <button id="rename-cancel" class="btn-later">Άκυρο</button>
+          <button id="rename-save" class="btn-save">✓ Αποθήκευση</button>
+        </div>
       </div>
     </div>
 
