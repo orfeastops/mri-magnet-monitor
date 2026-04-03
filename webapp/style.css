@@ -3,6 +3,8 @@ body { font-family: monospace; background: #0a0a0a; color: #e0e0e0; min-height: 
 header { display: flex; align-items: center; justify-content: space-between; padding: 12px 20px; border-bottom: 1px solid #1a1a1a; background: #0f0f0f; }
 header h1 { font-size: 1.1rem; color: #00ff88; }
 .badge { padding: 3px 10px; border-radius: 10px; font-size: 11px; font-weight: bold; }
+#logout-btn { font-size: 11px; color: #444; text-decoration: none; padding: 4px 10px; border: 1px solid #222; border-radius: 6px; }
+#logout-btn:hover { color: #ff4444; border-color: #ff4444; }
 .badge.online { background: #00ff8825; color: #00ff88; }
 .badge.offline { background: #ff444425; color: #ff4444; }
 #view-devices { padding: 20px; }
@@ -44,9 +46,22 @@ h2 { font-size: 11px; color: #555; text-transform: uppercase; letter-spacing: 1p
 #faults-box { padding: 0 16px 16px; display: flex; flex-direction: column; gap: 6px; }
 .fault-item { background: #1a0808; border: 1px solid #ff444433; border-radius: 8px; padding: 8px 12px; color: #ff4444; font-size: 12px; }
 .no-faults { color: #00ff88; font-size: 12px; padding: 8px 0; }
-#modal-new-device { position: fixed; inset: 0; background: #000000cc; display: flex; align-items: center; justify-content: center; z-index: 100; }
-.modal-box { background: #111; border: 1px solid #00ff88; border-radius: 12px; padding: 24px; display: flex; flex-direction: column; gap: 12px; min-width: 280px; }
-.modal-box h3 { color: #00ff88; }
-.modal-box p { color: #444; font-size: 12px; }
-.modal-box input { background: #000; border: 1px solid #333; color: #00ff88; padding: 8px 10px; border-radius: 6px; font-family: monospace; }
-.modal-box button { background: #00ff8820; border: 1px solid #00ff88; color: #00ff88; padding: 8px 16px; border-radius: 6px; cursor: pointer; font-family: monospace; }
+@keyframes pulse-border {
+  0%, 100% { border-color: #00ff88; box-shadow: 0 0 0 0 #00ff8840; }
+  50%       { border-color: #00ff88cc; box-shadow: 0 0 0 8px #00ff8800; }
+}
+#modal-new-device { position: fixed; inset: 0; background: #000000cc; display: flex; align-items: center; justify-content: center; z-index: 100; padding: 20px; }
+.modal-box { background: #111; border: 2px solid #00ff88; border-radius: 14px; padding: 28px 24px; display: flex; flex-direction: column; gap: 14px; width: 100%; max-width: 360px; animation: pulse-border 2s ease-in-out infinite; }
+.modal-icon { font-size: 2rem; text-align: center; }
+.modal-box h3 { color: #fff; font-size: 1.1rem; text-align: center; }
+.modal-sub { color: #7a8fa6; font-size: 12px; text-align: center; margin-top: -8px; }
+.modal-box #modal-mac { color: #00ff8888; font-size: 11px; font-family: monospace; text-align: center; }
+.modal-box input { background: #000; border: 1px solid #333; color: #00ff88; padding: 10px 12px; border-radius: 8px; font-family: monospace; font-size: 14px; width: 100%; outline: none; }
+.modal-box input:focus { border-color: #00ff88; }
+.modal-btns { display: flex; gap: 8px; }
+.btn-later { flex: 1; background: transparent; border: 1px solid #333; color: #555; padding: 9px; border-radius: 8px; cursor: pointer; font-family: monospace; font-size: 13px; }
+.btn-later:hover { border-color: #555; color: #888; }
+.btn-save { flex: 2; background: #00ff8820; border: 1px solid #00ff88; color: #00ff88; padding: 9px; border-radius: 8px; cursor: pointer; font-family: monospace; font-size: 13px; font-weight: bold; }
+.btn-save:hover { background: #00ff8835; }
+.modal-queue { color: #555; font-size: 11px; text-align: center; min-height: 14px; }
+.unnamed { color: #ff8800; font-style: italic; }

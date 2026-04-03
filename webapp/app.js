@@ -4,6 +4,7 @@ let pendingNewDevice = null;
 let term = null;
 let fitAddon = null;
 let rawBuffer = '';
+let namingQueue = [];
 
 function initTerminal() {
   if (term) term.dispose();
@@ -43,9 +44,8 @@ function connect() {
       updateDashboard(rawBuffer);
     }
     if (msg.type === 'new_device') {
-      pendingNewDevice = msg.mac;
-      document.getElementById('modal-mac').textContent = `MAC: ${msg.mac}`;
-      document.getElementById('modal-new-device').style.display = 'flex';
+      enqueueNaming(msg.mac);
+      loadDevices();
     }
     if (msg.type === 'device_named' || msg.type === 'device_offline') loadDevices();
   };
@@ -64,14 +64,64 @@ async function loadDevices() {
     ? '<p style="color:#444;font-size:13px">Δεν υπάρχουν μηχανήματα ακόμα.</p>'
     : devs.map(d => `
       <div class="device-card" onclick="openMagnet('${d.mac}','${d.name || d.mac}',${d.online})">
-        <div class="dev-name">${d.name || 'Αχαρακτήριστο'}</div>
+        <div class="dev-name">${d.name || '<span class="unnamed">Αχαρακτήριστο</span>'}</div>
         <div class="dev-mac">${d.mac}</div>
         <div class="${d.online ? 'dev-online' : 'dev-offline'}">
           ${d.online ? '● Online' : '○ Offline'}
         </div>
       </div>`).join('');
+
+  // Prompt naming for any unnamed online devices not already in queue
+  devs.filter(d => !d.name && d.online).forEach(d => enqueueNaming(d.mac));
 }
 
+// --- Naming queue ---
+function enqueueNaming(mac) {
+  if (namingQueue.includes(mac)) return;
+  namingQueue.push(mac);
+  if (namingQueue.length === 1) showNamingModal();
+}
+
+function showNamingModal() {
+  if (namingQueue.length === 0) return;
+  const mac = namingQueue[0];
+  pendingNewDevice = mac;
+  document.getElementById('modal-mac').textContent = `MAC: ${mac}`;
+  document.getElementById('modal-name').value = '';
+  const queueInfo = document.getElementById('modal-queue-info');
+  queueInfo.textContent = namingQueue.length > 1
+    ? `+ ${namingQueue.length - 1} ακόμα συσκευή σε αναμονή`
+    : '';
+  document.getElementById('modal-new-device').style.display = 'flex';
+  setTimeout(() => document.getElementById('modal-name').focus(), 50);
+}
+
+function closeNamingModal() {
+  document.getElementById('modal-new-device').style.display = 'none';
+  pendingNewDevice = null;
+}
+
+document.getElementById('modal-save').onclick = () => {
+  const name = document.getElementById('modal-name').value.trim();
+  if (!name || !pendingNewDevice) return;
+  ws.send(JSON.stringify({ type: 'name_device', mac: pendingNewDevice, name }));
+  namingQueue.shift();
+  closeNamingModal();
+  loadDevices();
+  if (namingQueue.length > 0) setTimeout(showNamingModal, 300);
+};
+
+document.getElementById('modal-name').addEventListener('keydown', e => {
+  if (e.key === 'Enter') document.getElementById('modal-save').click();
+});
+
+document.getElementById('modal-later').onclick = () => {
+  namingQueue.shift();
+  closeNamingModal();
+  if (namingQueue.length > 0) setTimeout(showNamingModal, 300);
+};
+
+// --- Rest of app ---
 function openMagnet(mac, name, online) {
   currentMac = mac;
   rawBuffer = '';
@@ -180,14 +230,5 @@ function updateDashboard(raw) {
     ? faults.map(f => `<div class="fault-item">⚠️ ${f}</div>`).join('')
     : '<div class="no-faults">✅ Δεν υπάρχουν faults</div>';
 }
-
-document.getElementById('modal-save').onclick = () => {
-  const name = document.getElementById('modal-name').value.trim();
-  if (!name || !pendingNewDevice) return;
-  ws.send(JSON.stringify({ type: 'name_device', mac: pendingNewDevice, name }));
-  document.getElementById('modal-new-device').style.display = 'none';
-  pendingNewDevice = null;
-  loadDevices();
-};
 
 connect();

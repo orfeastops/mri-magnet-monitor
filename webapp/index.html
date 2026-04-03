@@ -12,6 +12,7 @@
     <header>
       <h1>🧲 MRI Monitor</h1>
       <span id="conn-status" class="badge offline">Connecting...</span>
+      <a href="/logout" id="logout-btn">Αποσύνδεση</a>
     </header>
 
     <div id="view-devices">
@@ -54,10 +55,16 @@
 
     <div id="modal-new-device" style="display:none">
       <div class="modal-box">
-        <h3>🆕 Νέο μηχάνημα!</h3>
+        <div class="modal-icon">🆕</div>
+        <h3>Νέα συσκευή συνδέθηκε!</h3>
+        <p class="modal-sub">Δώσε ένα όνομα για να την αναγνωρίζεις</p>
         <p id="modal-mac"></p>
-        <input id="modal-name" type="text" placeholder="π.χ. Μαγνήτης Κέρκυρα">
-        <button id="modal-save">Αποθήκευση</button>
+        <input id="modal-name" type="text" placeholder="π.χ. Μαγνήτης Κέρκυρα" maxlength="40">
+        <div class="modal-btns">
+          <button id="modal-later" class="btn-later">Αργότερα</button>
+          <button id="modal-save" class="btn-save">✓ Αποθήκευση</button>
+        </div>
+        <p id="modal-queue-info" class="modal-queue"></p>
       </div>
     </div>
   </div>

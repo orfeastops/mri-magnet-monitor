@@ -1,9 +1,16 @@
+require('dotenv').config();
 const express = require('express');
 const http = require('http');
 const WebSocket = require('ws');
 const cors = require('cors');
 const path = require('path');
+const session = require('express-session');
 const db = require('./db');
+
+// ========== AUTH ==========
+const APP_PASSWORD = process.env.APP_PASSWORD || 'magnets';
+const REMEMBER_ME_DAYS = 30;
+// ==========================
 
 const app = express();
 const server = http.createServer(app);
@@ -11,6 +18,45 @@ const wss = new WebSocket.Server({ server });
 
 app.use(cors());
 app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
+app.use(session({
+  secret: process.env.SESSION_SECRET || 'change-this-in-env-file',
+  resave: false,
+  saveUninitialized: false,
+  cookie: { maxAge: 7 * 24 * 60 * 60 * 1000 } // 7 days
+}));
+
+// --- Login / Logout (no auth required) ---
+app.get('/login', (req, res) => {
+  if (req.session.authenticated) return res.redirect('/');
+  res.sendFile(path.join(__dirname, '../webapp/login.html'));
+});
+
+app.post('/login', (req, res) => {
+  if (req.body.password === APP_PASSWORD) {
+    req.session.authenticated = true;
+    if (req.body.remember) {
+      req.session.cookie.maxAge = REMEMBER_ME_DAYS * 24 * 60 * 60 * 1000;
+    }
+    res.redirect('/');
+  } else {
+    res.redirect('/login?error=1');
+  }
+});
+
+app.get('/logout', (req, res) => {
+  req.session.destroy();
+  res.redirect('/login');
+});
+
+// --- Auth middleware (protects everything below) ---
+function requireAuth(req, res, next) {
+  if (req.session.authenticated) return next();
+  res.redirect('/login');
+}
+app.use(requireAuth);
+
+// --- Protected static files & API ---
 app.use(express.static(path.join(__dirname, '../webapp')));
 
 const devices = new Map();
@@ -75,11 +121,12 @@ wss.on('connection', (ws) => {
     }
   });
 
-  ws.on('close', () => {
+  ws.on('close', (code, reason) => {
     if (isESP && deviceMac) {
+      console.log(`[ESP] Disconnected: ${deviceMac} code=${code} reason=${reason && reason.toString()}`);
       devices.delete(deviceMac);
-      broadcastToBrowsers({ type: 'device_offline', mac: deviceMac });
-      console.log(`[ESP] Disconnected: ${deviceMac}`);
+      try { broadcastToBrowsers({ type: 'device_offline', mac: deviceMac }); }
+      catch(e) { console.log('[ESP] broadcastToBrowsers error:', e.message); }
     }
     if (isBrowser) {
       devices.forEach(dev => {
@@ -109,4 +156,4 @@ app.get('/api/history/:mac', (req, res) => {
 });
 
 const PORT = process.env.PORT || 3001;
-server.listen(PORT, () => console.log(`MRI Monitor running on http://localhost:${PORT}`));	
+server.listen(PORT, () => console.log(`MRI Monitor running on http://localhost:${PORT}`));

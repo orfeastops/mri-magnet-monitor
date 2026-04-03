@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="el">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MRI Monitor — Σύνδεση</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: #1a1a2e;
+      color: #e0e0e0;
+      font-family: 'Segoe UI', sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+    }
+    .login-card {
+      background: #16213e;
+      border: 1px solid #0f3460;
+      border-radius: 12px;
+      padding: 2.5rem 2rem;
+      width: 100%;
+      max-width: 360px;
+      text-align: center;
+    }
+    h1 { font-size: 1.6rem; margin-bottom: 0.4rem; }
+    .subtitle { color: #7a8fa6; font-size: 0.85rem; margin-bottom: 2rem; }
+    input[type="password"] {
+      width: 100%;
+      padding: 0.75rem 1rem;
+      background: #0f3460;
+      border: 1px solid #1a5276;
+      border-radius: 8px;
+      color: #e0e0e0;
+      font-size: 1rem;
+      outline: none;
+      margin-bottom: 1rem;
+    }
+    input[type="password"]:focus { border-color: #2980b9; }
+    .remember-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 1.2rem;
+      cursor: pointer;
+      user-select: none;
+    }
+    .remember-row input[type="checkbox"] {
+      width: 16px;
+      height: 16px;
+      accent-color: #2980b9;
+      cursor: pointer;
+    }
+    .remember-row span { font-size: 0.85rem; color: #7a8fa6; }
+    button {
+      width: 100%;
+      padding: 0.75rem;
+      background: #2980b9;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 1rem;
+      cursor: pointer;
+    }
+    button:hover { background: #3498db; }
+    .error {
+      color: #e74c3c;
+      font-size: 0.85rem;
+      margin-bottom: 1rem;
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="login-card">
+    <h1>🧲 MRI Monitor</h1>
+    <p class="subtitle">Απαιτείται κωδικός πρόσβασης</p>
+    <form method="POST" action="/login">
+      <input type="password" name="password" placeholder="Κωδικός" autofocus autocomplete="current-password">
+      <p class="error" id="err-msg">Λάθος κωδικός. Δοκίμασε ξανά.</p>
+      <label class="remember-row">
+        <input type="checkbox" name="remember" value="1">
+        <span>Κράτα με συνδεδεμένο (30 μέρες)</span>
+      </label>
+      <button type="submit">Είσοδος →</button>
+    </form>
+  </div>
+  <script>
+    if (new URLSearchParams(location.search).get('error')) {
+      document.getElementById('err-msg').style.display = 'block';
+    }
+  </script>
+</body>
+</html>
